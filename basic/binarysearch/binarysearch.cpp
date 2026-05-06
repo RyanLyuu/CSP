@@ -16,6 +16,7 @@ int upper(std::vector<int>& a, int target){
         int mid = l + (r - l)/2;
         if(a[mid] <= target)  l = mid + 1;
         else                  r = mid;
+        
     }
     return l;
 }
