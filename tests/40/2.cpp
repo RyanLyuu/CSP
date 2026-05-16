@@ -1,3 +1,5 @@
+// 位运算与预处理表
+
 #include <bits/stdc++.h>
 
 int n, m;
@@ -6,11 +8,23 @@ int f(int x, int k){
     return (((x*x + k*k) % 8) ^ k);
 }
 
+int inverse_once(int x, int k){
+    int top = x >> 6;          // 高三位
+    int middle = (x >> 3) & 7; // 中三位
+    int tail = x & 7;          // 低三位
+
+    int B = top;
+    int C = middle ^ f(B, k);
+    int A = tail ^ f(C, k);
+
+    return (A << 6) | ( B << 3) | C; // 拼接
+}
+
 signed main(){
     std::cin >> n >> m;
     std::vector<int> k(m);
     std::vector<int> a(n);
-    std::vector<int> res(n);
+    std::vector<int> res(512);
 
     for(int i = 0; i < m; ++i){
         std::cin >> k[i];
@@ -19,34 +33,20 @@ signed main(){
     std::cin >> a[i];
     }
 
-    //1. 高三位为source b
-    //2. 算出f(b)
-    //3. 中三位^f(b)得到source c
-    //4. 算出f(c)
-    //5. 低三位^f(c)得到source a
+    for(int i = 0; i < 512; ++i){
+        int cur = i;
 
-    for (size_t i = 0; i < n ; i++)
-    {
-        int src{};
-        int top = a[i] >> 6;
-        int middle = (a[i] >> 3)&7;
-        int tail = a[i] & 7;
-        for (int j = m-1 ; j >= 0; j--)
-        {
-            int top_ = top;
-            int middle_ = middle;
-            int tail_ = tail;
-            middle = top;
-            tail = middle_ ^ f(middle, k[j]);
-            top = tail_ ^ f(tail, k[j]);
+        for(int j = m - 1; j >= 0; --j){
+            cur = inverse_once(cur, k[j]);
         }
-        src += (top << 6) + (middle << 3) + tail;
-        res[i] = src;
+
+        res[i] = cur;
     }
+
     
     for (int i = 0; i < n; i++)
     {
-        std::cout << res[i] << ' ';
+        std::cout << res[a[i]] << ' ';
     }
     
 
