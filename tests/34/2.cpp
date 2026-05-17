@@ -16,7 +16,6 @@ signed main(){
 
     int nx = n, ny = m;
 
-    bool tranfered = false;
 
     for (int i = 0; i < t; i++)
     {
@@ -27,13 +26,20 @@ signed main(){
             ny = p2;
         }
         if(o == 2){
-            tranfered = !tranfered;
+            std::vector<int> trans(n*m);
+            for(int i = 0; i < nx; ++i){
+                for(int j = 0; j < ny; ++j){
+                    int pos = i*ny + j;
+                    trans[j*nx + i] = source[pos];
+                }
+            }
+            std::copy(trans.begin(), trans.end(), source.begin());
+            int temp = nx;
+            nx = ny;
+            ny = temp;
         }
         if(o == 3){
-            if(!tranfered)
             std::cout << source[p1 * ny + p2] << std::endl;
-            else 
-            std::cout << source[p2 * ny + p1] << std::endl;
         }
     }
     

@@ -1,61 +1,63 @@
 #include <bits/stdc++.h>
+using namespace std;
 
-std::string source;
-int n;                                // 映射个数
-int m;                                // 查询个数
-std::vector<std::string> cache(1001); // 缓存
-std::vector<int> last(1001);   // i位置上一个有效缓存位置
-std::map<char, char> f;
+// 总共63种字符
+const int LOG = 63;
+const int N = 256;
 
+int up[LOG][N];
 
-void unwrap(const std::string& src){
-    f.insert({src[1], src[2]});
+string source;
+int n;
+int m;
+long long k;
+
+void build(){
+    for(int i = 1; i < LOG; ++i){
+        for(int x = 0; x < N; ++x){
+            up[i][x] = up[i - 1][up[i-1][x]];
+        }
+    }
+}
+
+int jump(int x, long long k){
+    for(int i = 0; i < LOG; ++i){
+        if(k & (1LL << i)){
+            x = up[i][x];
+        }
+    }
+    return x;
 }
 
 signed main(){
-    std::getline(std::cin, source);
-    source = source.substr(1, source.size());
-    cache[0] = source;
-    std::cin >> n;
-    std::cin.ignore();
-    for (int i = 0; i < n; i++)
-    {
-        std::string str;
-        std::getline(std::cin, str);
-        unwrap(str);
+    getline(cin, source);
+    cin >> n;
+    cin.ignore();
+    // 初始化默认映射
+    for(int i = 0; i < N; ++i){
+        up[0][i] = i; 
     }
-    std::cin >> m;
-    std::vector<int> qs(m);
-    for (int i = 0; i < m; i++)
-    {
-        std::cin >> qs[i];
+    // 读映射，填表
+    for(int i = 0; i < n; ++i){
+        string str;
+        getline(cin, str);
+        up[0][(int)str[1]] = (int)str[2];
     }
 
-
+    build(); // 建表
+    
+    cin >> m;
     for (int i = 0; i < m; i++)
     {
-        // 执行j次transform
-        for (int j = qs[i] - last[i]; j > 0; j--)
-        {
-            std::string initial = cache[last[qs[i]]];
-            // transform
-            for(char& letter: initial){
-                if(f.find(letter) != f.end()) letter = f[letter];
-            }
-            //更新cache
-            cache[qs[i]] = initial;
-            //更新last数组
-            int pos = qs[i];
-            for(pos; (pos < m && !cache[pos+1].empty()); pos++){
-                last[pos] = pos;
-            }
+        cin >> k;
+        string s = source;
+        for(char& letter : s){
+            if(letter == '#') continue;
+            letter = (char)jump(letter, k);
         }
-    }
-    
-    for (int i = 0; i < m; i++)
-    {
-        std::cout << '#' << cache[qs[i]] << '#' << std::endl;
-    }
-    
 
+        cout << s << std::endl;
+    }
+    
+    
 }

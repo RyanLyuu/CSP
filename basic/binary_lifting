@@ -1,0 +1,29 @@
+- 倍增算法
+- 针对某个对象执行大量某一操作
+
+```cpp
+const int LOG = 63; // long long 的最大长度约2^63
+const int N = 100005;
+
+int up[LOG][N];   // up[0][x] 对x操作2^0次的结果
+
+// 根据题目自行初始化up[0][i]
+
+void build(){
+    for(int i = 1;i < Log; ++i){
+        for(int x = 1; x <= n; ++x){             // 所有可能状态
+            up[i][x] = up[i - 1][up[i-1][x]];    // 执行2^i次的结果 = 对2^i-1次的结果执行2^i-1次
+        }
+    }
+}
+
+int jump(int x, long long k){
+    for(int i = 0; i < LOG; ++i){
+        if(k & (1LL << i)){                    // 把k进行二进制拆分，每次操作一位
+            x = up[i][x];
+        }
+    }
+    return x;
+}
+
+```
